@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <error.h>
+#include "video.h"
 
 #define PAGE "<html><head><title>libmicrohttpd demo</title>"\
              "</head><body>libmicrohttpd demo %d</body></html>"
@@ -60,11 +62,26 @@ int main(int argc, char ** argv)
     if (d == NULL)
         return 1;
 
-    for(int i=0; i<100; ++i)
+    //TODO: keep a series of log files
+
+    //TODO: the name of the file should be the start date
+    //TODO: only at the end move it to start_date-end_date
+    FILE *fd = fopen("/tmp/video.mjpeg", "a");
+    if(NULL == fd)
     {
-        printf("%d\n", i);
-        sleep(1);
+        perror("fopen");
+        exit(EXIT_FAILURE);
     }
+
+    //TODO: this should return a status and I should sleep 1 second and retry (the file should be reopened)
+    capture_video(fd);
+
+    fclose(fd);
+    /*for(int i=0; i<100; ++i)*/
+    /*{*/
+        /*printf("%d\n", i);*/
+        /*sleep(1);*/
+    /*}*/
 
     getchar ();
     MHD_stop_daemon(d);

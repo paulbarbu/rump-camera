@@ -14,8 +14,8 @@ camera.bin: camera
 	rumprun-bake hw_generic camera.bin camera
 	$(STRIP) camera.bin
 	
-camera: main.c
-	$(CC) -o camera -I. main.c libmicrohttpd.a -Wl,-Bdynamic -lpthread
+camera: main.c video.c
+	$(CC) -o camera -I. main.c video.c libmicrohttpd.a -Wl,-Bdynamic -lpthread
 
 iface:
 	(ip tuntap add tap0 mode tap)
