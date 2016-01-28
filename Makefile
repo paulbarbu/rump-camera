@@ -1,6 +1,4 @@
-TUPLE=x86_64-rumprun-netbsd
-CC=$(TUPLE)-gcc
-STRIP=$(TUPLE)-strip
+TUPLE=
 
 # ALT+2, quit
 run: camera.bin
@@ -13,9 +11,25 @@ run: camera.bin
 camera.bin: camera
 	rumprun-bake hw_generic camera.bin camera
 	$(STRIP) camera.bin
+
+rump:
+	$(eval TUPLE=x86_64-rumprun-netbsd-)
+	-unlink libs
+	ln -s ${@}libs libs
+	$(MAKE) camera TUPLE=$(TUPLE)
+
+x86_64:
+	-unlink libs
+	ln -s ${@}libs libs
+	$(MAKE) camera TUPLE=$(TUPLE)
 	
 camera: main.c video.c
-	$(CC) -o camera -I. main.c video.c libmicrohttpd.a -Wl,-Bdynamic -lpthread
+	$(eval CC=$(TUPLE)gcc)
+	$(eval STRIP=$(TUPLE)strip)
+	@echo tuple $(TUPLE)
+	@echo cc $(CC)
+
+	$(CC) -o camera -I. main.c video.c libs/libmicrohttpd.a -Wl,-Bdynamic -lpthread
 
 iface:
 	(ip tuntap add tap0 mode tap)

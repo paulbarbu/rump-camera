@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <error.h>
 #include "video.h"
 
 #define PAGE "<html><head><title>libmicrohttpd demo</title>"\
