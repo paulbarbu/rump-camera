@@ -75,6 +75,7 @@ void capture_video(FILE* fd)
 
             buf_size = 0;
         }
+        //TODO: maybe flush the fd every three writes or so
     }
     while(0 != numbytes);
 

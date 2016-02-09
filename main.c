@@ -65,7 +65,7 @@ int main(int argc, char ** argv)
 
     //TODO: the name of the file should be the start date
     //TODO: only at the end move it to start_date-end_date
-    FILE *fd = fopen("/tmp/video.mjpeg", "a");
+    FILE *fd = fopen("/data/video.mjpeg", "a");
     if(NULL == fd)
     {
         perror("fopen");
