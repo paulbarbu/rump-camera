@@ -2,10 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
+
 #include "video.h"
+
+// interval for video capture, in seconds
+#define INTERVAL 60*60 // 60 mins
+//                     videoYYYY-  MM-  DD-  hh-  mm- ss
+#define FILENAME "/tmp/video%04d-%02d-%02d-%02d-%02d-%02d.mjpeg"
 
 #define PAGE "<html><head><title>libmicrohttpd demo</title>"\
              "</head><body>libmicrohttpd demo %d</body></html>"
+
+
+static time_t start_time;
 
 static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *url, const char *method,
                     const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
@@ -42,6 +52,19 @@ static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *ur
     return ret;
 }
 
+int timeout_elapsed()
+{
+	time_t current_time = time(NULL);
+
+	if(difftime(current_time, start_time) > INTERVAL)
+	{
+		printf("Interval %d elapsed\n");
+		return 1;
+	}
+
+	return 0;
+}
+
 int main(int argc, char ** argv) 
 {
     int port = 12312;
@@ -59,30 +82,43 @@ int main(int argc, char ** argv)
     d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION, port,  NULL, NULL, &ahc_echo, PAGE, MHD_OPTION_END);
 
     if (d == NULL)
-        return 1;
-
-    //TODO: keep a series of log files
-
-    //TODO: the name of the file should be the start date
-    //TODO: only at the end move it to start_date-end_date
-    FILE *fd = fopen("/data/video.mjpeg", "a");
-    if(NULL == fd)
     {
-        perror("fopen");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
-    //TODO: this should return a status and I should sleep 1 second and retry (the file should be reopened)
-    capture_video(fd);
+	char filename[255];
 
-    fclose(fd);
-    /*for(int i=0; i<100; ++i)*/
-    /*{*/
-        /*printf("%d\n", i);*/
-        /*sleep(1);*/
-    /*}*/
+    do
+    {
+    	start_time = time(NULL);
+    	struct tm *utc = gmtime(&start_time);
 
-    getchar ();
+		//TODO: keep a series of log files
+
+    	int rval = snprintf(filename, 255, FILENAME, 1900+utc->tm_year, 1+utc->tm_mon, utc->tm_mday, utc->tm_hour, utc->tm_min, utc->tm_sec);
+    	if(rval < 0 || rval >= 255)
+    	{
+    		perror("snprintf");
+    		exit(1);
+    	}
+
+    	printf("Writing to %s\n", filename);
+
+		//TODO: only at the end move it to start_date-end_date
+		FILE *fd = fopen(filename, "a");
+		if(NULL == fd)
+		{
+			perror("fopen");
+			exit(EXIT_FAILURE);
+		}
+
+		//TODO: this should return a status and I should sleep 1 second and retry (the file should be reopened)
+		capture_video(fd, timeout_elapsed);
+
+		fclose(fd);
+    }
+    while(1);
+
     MHD_stop_daemon(d);
 
     return 0;

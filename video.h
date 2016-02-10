@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-void capture_video(FILE *fd);
+void capture_video(FILE *fd, int (*stop)());
 
 #endif

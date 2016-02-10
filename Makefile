@@ -14,6 +14,7 @@ run: camera.bin
 	
 camera.bin: camera
 	rumprun-bake hw_generic camera.bin camera
+	# TODO: use the proper strip commadn before running this
 	#$(STRIP) camera.bin
 
 rump:

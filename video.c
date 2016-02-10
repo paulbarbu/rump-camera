@@ -14,7 +14,7 @@
 #define DEFAULT_BUF_SIZE 65536
 #define WRITE_THRESHOLD 65000
 
-void capture_video(FILE* fd)
+void capture_video(FILE* fd, int (*stop)())
 {
     assert(fd != NULL);
 
@@ -55,7 +55,7 @@ void capture_video(FILE* fd)
         //TODO: at the first response if the HTTP response code is != 200 return error 
         //TODO: at the first response I may want to capture th boundary and to strip the rest of the headers
         numbytes = recv(sfd, buf + buf_size, DEFAULT_BUF_SIZE - buf_size, 0);
-        printf("Received %d bytes\n", numbytes);
+        //printf("Received %d bytes\n", numbytes);
 
         if(-1 == numbytes)
         {
@@ -77,7 +77,7 @@ void capture_video(FILE* fd)
         }
         //TODO: maybe flush the fd every three writes or so
     }
-    while(0 != numbytes);
+    while(0 != numbytes && !stop());
 
     if(buf_size > 0)
     {
@@ -88,5 +88,7 @@ void capture_video(FILE* fd)
         }
     }
     
+    fflush(fd);
+
     close(sfd);
 }
