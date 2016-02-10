@@ -28,13 +28,13 @@ x86_64:
 	ln -s ${@}libs libs
 	$(MAKE) camera TUPLE=$(TUPLE)
 	
-camera: main.c video.c
+camera: main.c video.c manager.c
 	$(eval CC=$(TUPLE)gcc)
 	$(eval STRIP=$(TUPLE)strip)
 	@echo tuple $(TUPLE)
 	@echo cc $(CC)
 
-	$(CC) -o camera -I. main.c video.c libs/libmicrohttpd.a -Wl,-Bdynamic -lpthread
+	$(CC) -g -Wall -o camera -I. ${^} libs/libmicrohttpd.a -Wl,-Bdynamic -lpthread
 
 iface:
 	(ip tuntap add tap0 mode tap)

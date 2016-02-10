@@ -4,16 +4,9 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "manager.h"
 #include "video.h"
-
-// interval for video capture, in seconds
-#define INTERVAL 60*60 // 60 mins
-//                     videoYYYY-  MM-  DD-  hh-  mm- ss
-#define FILENAME "/tmp/video%04d-%02d-%02d-%02d-%02d-%02d.mjpeg"
-
-#define PAGE "<html><head><title>libmicrohttpd demo</title>"\
-             "</head><body>libmicrohttpd demo %d</body></html>"
-
+#include "config.h"
 
 static time_t start_time;
 
@@ -58,7 +51,7 @@ int timeout_elapsed()
 
 	if(difftime(current_time, start_time) > INTERVAL)
 	{
-		printf("Interval %d elapsed\n");
+		printf("Interval %d elapsed\n", INTERVAL);
 		return 1;
 	}
 
@@ -86,17 +79,26 @@ int main(int argc, char ** argv)
         return 1;
     }
 
-	char filename[255];
+	char filename[FILENAME_LEN];
+
+	// TODO: this should be prepopulated when the program starts
+	struct manager *mgr = manager_create();
+
+	if(NULL == mgr)
+	{
+		perror("manager_create");
+		exit(1);
+	}
 
     do
     {
     	start_time = time(NULL);
     	struct tm *utc = gmtime(&start_time);
 
-		//TODO: keep a series of log files
+    	//TODO: watch the dimension of the videos
 
-    	int rval = snprintf(filename, 255, FILENAME, 1900+utc->tm_year, 1+utc->tm_mon, utc->tm_mday, utc->tm_hour, utc->tm_min, utc->tm_sec);
-    	if(rval < 0 || rval >= 255)
+    	int rval = snprintf(filename, FILENAME_LEN, FILENAME, 1900+utc->tm_year, 1+utc->tm_mon, utc->tm_mday, utc->tm_hour, utc->tm_min, utc->tm_sec);
+    	if(rval < 0 || rval >= FILENAME_LEN)
     	{
     		perror("snprintf");
     		exit(1);
@@ -115,9 +117,18 @@ int main(int argc, char ** argv)
 		//TODO: this should return a status and I should sleep 1 second and retry (the file should be reopened)
 		capture_video(fd, timeout_elapsed);
 
+		if(0 != manager_add(mgr, filename, ftell(fd)/1024/1024))
+		{
+			perror("manager_add");
+			exit(1);
+		}
+		manager_print(mgr);
+
 		fclose(fd);
     }
     while(1);
+
+    manager_release(mgr);
 
     MHD_stop_daemon(d);
 

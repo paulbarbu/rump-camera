@@ -71,7 +71,7 @@ void capture_video(FILE* fd, int (*stop)())
                 fprintf(stderr, "fwrite failed\n");
                 exit(EXIT_FAILURE);
             }
-            printf("Written %d bytes to file\n", buf_size);
+            //printf("Written %ld bytes to file\n", buf_size);
 
             buf_size = 0;
         }
