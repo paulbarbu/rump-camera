@@ -4,12 +4,6 @@
 
 #include "manager.h"
 
-struct video
-{
-	char filename[FILENAME_LEN];
-	long int size;	
-};
-
 struct manager
 {
 	struct video vids[MAX_VIDS];
@@ -17,7 +11,7 @@ struct manager
 } global_mgr;
 
 
-void _video_create(struct video *v, char *filename, long int size);
+void _video_create(struct video *v, char *name, char *fullname, long int size);
 int _manager_remove_oldest(struct manager *m);
 int _manager_clean_size(struct manager *m);
 long int _total_size(struct manager *m);
@@ -33,13 +27,13 @@ void manager_release(struct manager *m)
 {
 }
 
-int manager_add(struct manager *m, char *filename, long int size)
+int manager_add(struct manager *m, char *filename, char *fullname, long int size)
 {		
 	int ret = 0;
 
 	//add the new video in the queue	
 	struct video v;
-	_video_create(&v, filename, size);
+	_video_create(&v, filename, fullname, size);
 	
 	m->vids[m->num] = v;	
 	m->num += 1;
@@ -66,8 +60,36 @@ void manager_print(struct manager *m)
 		
 	for(int i=m->num-1; i>=0; --i)
 	{
-		printf("%d: %s (%ld MB)\n", i, m->vids[i].filename, m->vids[i].size);
+		printf("%d: %s (%ld MB)\n", i, m->vids[i].fullname, m->vids[i].size);
 	}
+}
+
+int manager_count(struct manager *m)
+{
+	return m->num;
+}
+
+void manager_video(struct manager *m, int n, struct video **v)
+{
+	*v = NULL;
+
+	if(n < m->num)
+	{
+		*v = &m->vids[n];
+	}
+}
+
+struct video *manager_find(struct manager *m, const char *name)
+{
+	for(int i=m->num-1; i>=0; --i)
+	{
+		if(0 == strncmp(name, m->vids[i].name, FILENAME_LEN))
+		{
+			return &m->vids[i];
+		}
+	}
+
+	return NULL;
 }
 
 int _manager_remove_oldest(struct manager *m)
@@ -78,9 +100,9 @@ int _manager_remove_oldest(struct manager *m)
 		return 0;
 	}
 
-	printf("Removing %s\n", m->vids[0].filename);
+	printf("Removing %s\n", m->vids[0].fullname);
 	// delete the oldest video
-	if(-1 == unlink(m->vids[0].filename))
+	if(-1 == unlink(m->vids[0].fullname))
 	{
 		perror("unlink");
 		return 1;
@@ -113,10 +135,11 @@ int _manager_clean_size(struct manager *m)
 	return ret;
 }
 
-void _video_create(struct video *v, char *filename, long int size)
+void _video_create(struct video *v, char *name, char *fullname, long int size)
 {
 	v->size = size;
-	strncpy(v->filename, filename, FILENAME_LEN);
+	strncpy(v->name, name, FILENAME_LEN);
+	strncpy(v->fullname, fullname, FILENAME_LEN);
 }
 
 long int _total_size(struct manager *m)

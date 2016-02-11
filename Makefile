@@ -28,7 +28,7 @@ x86_64:
 	ln -s ${@}libs libs
 	$(MAKE) camera TUPLE=$(TUPLE)
 	
-camera: main.c video.c manager.c
+camera: main.c video.c manager.c httpd.c
 	$(eval CC=$(TUPLE)gcc)
 	$(eval STRIP=$(TUPLE)strip)
 	@echo tuple $(TUPLE)
