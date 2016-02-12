@@ -14,6 +14,7 @@
 #define DEFAULT_BUF_SIZE 65536
 #define WRITE_THRESHOLD 65000
 #define OK_RESPONSE "HTTP/1.1 200 OK"
+#define MAX_WRITE_COUNT 3
 
 int capture_video(FILE* fd, int (*stop)())
 {
@@ -21,6 +22,7 @@ int capture_video(FILE* fd, int (*stop)())
     assert(stop != NULL);
 
     int checked_http_response = 0;
+    int write_count = 0;
     int sfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(-1 == sfd)
@@ -55,7 +57,6 @@ int capture_video(FILE* fd, int (*stop)())
 
     do
     {
-        //TODO: at the first response I may want to capture the boundary and to strip the rest of the headers
         numbytes = recv(sfd, buf + buf_size, DEFAULT_BUF_SIZE - buf_size, 0);
         //printf("Received %d bytes\n", numbytes);
 
@@ -93,9 +94,15 @@ int capture_video(FILE* fd, int (*stop)())
             }
             //printf("Written %ld bytes to file\n", buf_size);
 
+            write_count+=1;
+            if(write_count >= MAX_WRITE_COUNT)
+            {
+            	fflush(fd);
+            	write_count = 0;
+            }
+
             buf_size = 0;
         }
-        //TODO: maybe flush the fd every three writes or so
     }
     while(0 != numbytes && !stop());
 
