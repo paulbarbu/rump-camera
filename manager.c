@@ -32,7 +32,7 @@ struct manager *manager_create()
 
 	//I can benefit from the fact that the videos have sortable names by default
 	int numdirs = scandir(BASE_DIR, &namelist, _video_filter, alphasort);
-	if(-1 != numdirs && numdirs > 0)
+	if(numdirs > 0)
 	{
 		int start = numdirs-MAX_VIDS+1;
 		if(start < 0)
