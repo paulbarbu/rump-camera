@@ -12,63 +12,42 @@
 
 #define MAX_ITEM_LEN 2*FILENAME_LEN + 16 + strlen(LIST_ITEM)
 
-int _sprint_video_list(char **text, struct manager *mgr)
+int _sprint_video_list(char **text, struct manager *mgr);
+int _httpd_list_files(struct MHD_Connection *connection, void *data);
+int _httpd_try_download(struct MHD_Connection *connection, void *data,
+		const char *url, int (*failure_handler)(struct MHD_Connection *connection, void *data));
+
+int httpd_serve(void *cls, struct MHD_Connection *connection, const char *url, const char *method,
+		const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
 {
-	struct video *v = NULL;
-	size_t buffer_len = 0;
-	size_t buffer_size = 1024;
-	char *buffer = (char*) malloc(buffer_size);
-	char item[MAX_ITEM_LEN];
+    static int dummy;
 
-	if(NULL == buffer)
-	{
-		perror("malloc");
-		return 1;
-	}
+    if (0 != strcmp(method, "GET"))
+    {
+        return MHD_NO;
+    }
 
-	for(int i=manager_count(mgr)-1; i>=0; --i)
-	{
-		manager_video(mgr, i, &v);
+    if (&dummy != *ptr)
+    {
+        // The first time only the headers are valid, do not respond yet
+        *ptr = &dummy;
+        return MHD_YES;
+    }
 
-		if(v != NULL)
-		{
-			snprintf(item, MAX_ITEM_LEN, LIST_ITEM, v->name, v->name, v->size);
-			int item_len = strlen(item);
+    *ptr = NULL; // clear context pointer
 
-			// enlarge the text buffer is needed
-			if(item_len + buffer_len > buffer_size)
-			{
-				buffer_size += 2*item_len;
-				char *new_text = realloc(buffer, buffer_size);
+    printf("URL: %s\n", url);
 
-				if(NULL == new_text)
-				{
-					free(buffer);
-					buffer = NULL;
-					perror("realloc");
-					return 1;
-				}
-				buffer = new_text;
-			}
+    char *download = strstr(url, "/"BASE_FILENAME);
 
-			strncat(buffer, item, item_len);
-			buffer_len += item_len;
-		}
-	}
+    // if the pattern is not found or is not at the beginning
+    // just display the list of videos, otherwise try to download the video
+    if(NULL == download || url != download)
+    {
+    	return _httpd_list_files(connection, cls);
+    }
 
-	*text = (char*) malloc(buffer_size);
-
-	if(NULL == *text)
-	{
-		perror("malloc");
-		return 1;
-	}
-
-    snprintf(*text, buffer_size, LIST_PAGE, buffer);
-
-    free(buffer);
-
-    return 0;
+    return _httpd_try_download(connection, cls, url, _httpd_list_files);
 }
 
 int _httpd_list_files(struct MHD_Connection *connection, void *data)
@@ -139,35 +118,62 @@ int _httpd_try_download(struct MHD_Connection *connection, void *data,
     return ret;
 }
 
-int httpd_serve(void *cls, struct MHD_Connection *connection, const char *url, const char *method,
-		const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
+int _sprint_video_list(char **text, struct manager *mgr)
 {
-    static int dummy;
+	struct video *v = NULL;
+	size_t buffer_len = 0;
+	size_t buffer_size = 1024;
+	char *buffer = (char*) malloc(buffer_size);
+	char item[MAX_ITEM_LEN];
 
-    if (0 != strcmp(method, "GET"))
-    {
-        return MHD_NO;
-    }
+	if(NULL == buffer)
+	{
+		perror("malloc");
+		return 1;
+	}
 
-    if (&dummy != *ptr)
-    {
-        // The first time only the headers are valid, do not respond yet
-        *ptr = &dummy;
-        return MHD_YES;
-    }
+	for(int i=manager_count(mgr)-1; i>=0; --i)
+	{
+		manager_video(mgr, i, &v);
 
-    *ptr = NULL; // clear context pointer
+		if(v != NULL)
+		{
+			snprintf(item, MAX_ITEM_LEN, LIST_ITEM, v->name, v->name, v->size);
+			int item_len = strlen(item);
 
-    printf("URL: %s\n", url);
+			// enlarge the text buffer is needed
+			if(item_len + buffer_len > buffer_size)
+			{
+				buffer_size += 2*item_len;
+				char *new_text = realloc(buffer, buffer_size);
 
-    char *download = strstr(url, "/"BASE_FILENAME);
+				if(NULL == new_text)
+				{
+					free(buffer);
+					buffer = NULL;
+					perror("realloc");
+					return 1;
+				}
+				buffer = new_text;
+			}
 
-    // if the pattern is not found or is not at the beginning
-    // just display the list of videos, otherwise try to download the video
-    if(NULL == download || url != download)
-    {
-    	return _httpd_list_files(connection, cls);
-    }
+			strncat(buffer, item, item_len);
+			buffer_len += item_len;
+		}
+	}
 
-    return _httpd_try_download(connection, cls, url, _httpd_list_files);
+	*text = (char*) malloc(buffer_size);
+
+	if(NULL == *text)
+	{
+		perror("malloc");
+		return 1;
+	}
+
+    snprintf(*text, buffer_size, LIST_PAGE, buffer);
+
+    free(buffer);
+
+    return 0;
 }
+

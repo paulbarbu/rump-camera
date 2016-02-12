@@ -1,6 +1,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 
 #include "manager.h"
 
@@ -15,11 +21,46 @@ void _video_create(struct video *v, char *name, char *fullname, long int size);
 int _manager_remove_oldest(struct manager *m);
 int _manager_clean_size(struct manager *m);
 long int _total_size(struct manager *m);
-
+int _video_filter(const struct dirent *d);
 
 struct manager *manager_create()
 {
 	global_mgr.num = 0;
+
+	struct stat sbuf;
+	struct dirent **namelist;
+	char fullname[FILENAME_LEN];
+
+	//I can benefit from the fact that the videos have sortable names by default
+	int numdirs = scandir(BASE_DIR, &namelist, _video_filter, alphasort);
+	if(-1 != numdirs)
+	{
+		for(int i=numdirs-MAX_VIDS+1; i<numdirs; ++i)
+		{
+			snprintf(fullname, FILENAME_LEN, "%s%s", BASE_DIR, namelist[i]->d_name);
+
+			if(-1 == stat(fullname, &sbuf))
+			{
+				perror("stat");
+			}
+			else
+			{
+				manager_add(&global_mgr, namelist[i]->d_name, fullname, sbuf.st_size/1024/1024);
+				printf("%s\n", namelist[i]->d_name);
+				free(namelist[i]);
+			}
+		}
+
+		for(int i=0; i<numdirs-MAX_VIDS+1; ++i)
+		{
+			free(namelist[i]);
+		}
+
+		free(namelist);
+	}
+
+	assert(global_mgr.num == MAX_VIDS-1);
+
 	return &global_mgr;
 }
 
@@ -125,7 +166,7 @@ int _manager_clean_size(struct manager *m)
 	long int total = _total_size(m);
 	long int average_size = total / m->num;
 
-	printf("Total size: %ld\nAverage size: %ld\n", total, average_size);
+	printf("Max. size: %ld MB\nTotal size: %ld MB\nAverage size: %ld MB\n", MAX_TOTAL_SIZE, total, average_size);
 
 	if(total + average_size > MAX_TOTAL_SIZE)
 	{
@@ -153,3 +194,18 @@ long int _total_size(struct manager *m)
 	return sum;
 }
 
+int _video_filter(const struct dirent *d)
+{
+	//check the start of the name
+	if(0 == strncmp(d->d_name, BASE_FILENAME, strlen(BASE_FILENAME)))
+	{
+		//check the extension
+		int ext_len = strlen(FILE_EXT);
+		if(0 == strncmp(d->d_name + strlen(d->d_name) - ext_len, FILE_EXT, ext_len))
+		{
+			return 1; // keep this entry
+		}
+	}
+
+	return 0; // discard this entry
+}
