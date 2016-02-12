@@ -36,8 +36,6 @@ int main(int argc, char ** argv)
         port = atoi(argv[1]);
     }
 
-	// TODO: this should be prepopulated when the program starts
-    //http://www.gnu.org/software/libc/manual/html_node/Scanning-Directory-Content.html#Scanning-Directory-Content
 	struct manager *mgr = manager_create();
 
 	if(NULL == mgr)
@@ -86,7 +84,6 @@ int main(int argc, char ** argv)
 
     	printf("Writing to %s\n", fullname);
 
-		//TODO: only at the end move it to start_date-end_date
 		FILE *fd = fopen(fullname, "a");
 		if(NULL == fd)
 		{

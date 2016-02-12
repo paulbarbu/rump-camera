@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define BASE_DIR "/tmp/"
+#define BASE_DIR "/data/"
 #define BASE_FILENAME "video"
 #define FILE_EXT ".mjpeg"
 

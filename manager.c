@@ -29,7 +29,6 @@ struct manager *manager_create()
 
 	struct stat sbuf;
 	struct dirent **namelist;
-	char fullname[FILENAME_LEN];
 
 	//I can benefit from the fact that the videos have sortable names by default
 	int numdirs = scandir(BASE_DIR, &namelist, _video_filter, alphasort);
@@ -37,6 +36,7 @@ struct manager *manager_create()
 	{
 		for(int i=numdirs-MAX_VIDS+1; i<numdirs; ++i)
 		{
+			char fullname[FILENAME_LEN];
 			snprintf(fullname, FILENAME_LEN, "%s%s", BASE_DIR, namelist[i]->d_name);
 
 			if(-1 == stat(fullname, &sbuf))
@@ -59,7 +59,7 @@ struct manager *manager_create()
 		free(namelist);
 	}
 
-	assert(global_mgr.num == MAX_VIDS-1);
+	//assert(global_mgr.num == MAX_VIDS-1);
 
 	return &global_mgr;
 }
