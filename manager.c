@@ -32,9 +32,16 @@ struct manager *manager_create()
 
 	//I can benefit from the fact that the videos have sortable names by default
 	int numdirs = scandir(BASE_DIR, &namelist, _video_filter, alphasort);
-	if(-1 != numdirs)
+	if(-1 != numdirs && numdirs > 0)
 	{
-		for(int i=numdirs-MAX_VIDS+1; i<numdirs; ++i)
+		int start = numdirs-MAX_VIDS+1;
+		if(start < 0)
+		{
+			// if there are less than MAX_VIDS-1 videos, just use them all
+			start = 0;
+		}
+
+		for(int i=start; i<numdirs; ++i)
 		{
 			char fullname[FILENAME_LEN];
 			snprintf(fullname, FILENAME_LEN, "%s%s", BASE_DIR, namelist[i]->d_name);
@@ -46,7 +53,6 @@ struct manager *manager_create()
 			else
 			{
 				manager_add(&global_mgr, namelist[i]->d_name, fullname, sbuf.st_size/1024/1024);
-				printf("%s\n", namelist[i]->d_name);
 				free(namelist[i]);
 			}
 		}
@@ -166,7 +172,7 @@ int _manager_clean_size(struct manager *m)
 	long int total = _total_size(m);
 	long int average_size = total / m->num;
 
-	printf("Max. size: %ld MB\nTotal size: %ld MB\nAverage size: %ld MB\n", MAX_TOTAL_SIZE, total, average_size);
+	//printf("Max. size: %ld MB\nTotal size: %ld MB\nAverage size: %ld MB\n", MAX_TOTAL_SIZE, total, average_size);
 
 	if(total + average_size > MAX_TOTAL_SIZE)
 	{
