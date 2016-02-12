@@ -114,6 +114,7 @@ int _httpd_try_download(struct MHD_Connection *connection, void *data,
     	return failure_handler(connection, data);
     }
 
+    //FIX ME: if the files are large, I may need to use "O_LARGEFILE"
     int fd = open(v->fullname, O_RDONLY);
 
     if(-1 == fd)

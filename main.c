@@ -37,6 +37,7 @@ int main(int argc, char ** argv)
     }
 
 	// TODO: this should be prepopulated when the program starts
+    //http://www.gnu.org/software/libc/manual/html_node/Scanning-Directory-Content.html#Scanning-Directory-Content
 	struct manager *mgr = manager_create();
 
 	if(NULL == mgr)
@@ -49,7 +50,10 @@ int main(int argc, char ** argv)
 
     if (d == NULL)
     {
-        return 1;
+    	manager_release(mgr);
+
+    	perror("MHD_start_daemon");
+        exit(1);
     }
 
 	char filename[FILENAME_LEN];
@@ -63,6 +67,9 @@ int main(int argc, char ** argv)
     	int rval = snprintf(filename, FILENAME_LEN, FILENAME, 1900+utc->tm_year, 1+utc->tm_mon, utc->tm_mday, utc->tm_hour, utc->tm_min, utc->tm_sec);
     	if(rval < 0 || rval >= FILENAME_LEN)
     	{
+			manager_release(mgr);
+			MHD_stop_daemon(d);
+
     		perror("snprintf");
     		exit(1);
     	}
@@ -70,6 +77,9 @@ int main(int argc, char ** argv)
     	rval = snprintf(fullname, FILENAME_LEN, "%s%s", BASE_DIR, filename);
     	if(rval < 0 || rval >= FILENAME_LEN)
     	{
+			manager_release(mgr);
+			MHD_stop_daemon(d);
+
     		perror("snprintf");
     		exit(1);
     	}
@@ -80,26 +90,40 @@ int main(int argc, char ** argv)
 		FILE *fd = fopen(fullname, "a");
 		if(NULL == fd)
 		{
+			manager_release(mgr);
+			MHD_stop_daemon(d);
+
 			perror("fopen");
 			exit(EXIT_FAILURE);
 		}
 
-		//TODO: this should return a status and I should sleep 1 second and retry (the file should be reopened)
-		capture_video(fd, timeout_elapsed);
-
-		if(0 != manager_add(mgr, filename, fullname, ftell(fd)/1024/1024))
+		if(0 != capture_video(fd, timeout_elapsed))
 		{
-			perror("manager_add");
-			exit(1);
-		}
-		manager_print(mgr);
+			//capture failed
+			fclose(fd);
 
-		fclose(fd);
+			// delete the video
+			if(-1 == unlink(fullname))
+			{
+				perror("unlink");
+			}
+
+			sleep(1);
+		}
+		else // capture succeeded
+		{
+			if(0 != manager_add(mgr, filename, fullname, ftell(fd)/1024/1024))
+			{
+				perror("manager_add");
+			}
+			manager_print(mgr);
+
+			fclose(fd);
+		}
     }
     while(1);
 
     manager_release(mgr);
-
     MHD_stop_daemon(d);
 
     return 0;

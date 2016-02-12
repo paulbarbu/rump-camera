@@ -13,17 +13,20 @@
 
 #define DEFAULT_BUF_SIZE 65536
 #define WRITE_THRESHOLD 65000
+#define OK_RESPONSE "HTTP/1.1 200 OK"
 
-void capture_video(FILE* fd, int (*stop)())
+int capture_video(FILE* fd, int (*stop)())
 {
     assert(fd != NULL);
+    assert(stop != NULL);
 
+    int checked_http_response = 0;
     int sfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(-1 == sfd)
     {
         perror("socket");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     struct sockaddr_in addr;
@@ -34,7 +37,7 @@ void capture_video(FILE* fd, int (*stop)())
     if(-1 == connect(sfd, (struct sockaddr*)&addr, sizeof(addr)))
     {
         perror("connect");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     char buf[DEFAULT_BUF_SIZE];
@@ -47,20 +50,37 @@ void capture_video(FILE* fd, int (*stop)())
     if(-1 == send(sfd, httpreq, strlen(httpreq), 0))
     {
         perror("send");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     do
     {
-        //TODO: at the first response if the HTTP response code is != 200 return error 
-        //TODO: at the first response I may want to capture th boundary and to strip the rest of the headers
+        //TODO: at the first response I may want to capture the boundary and to strip the rest of the headers
         numbytes = recv(sfd, buf + buf_size, DEFAULT_BUF_SIZE - buf_size, 0);
         //printf("Received %d bytes\n", numbytes);
 
         if(-1 == numbytes)
         {
             perror("recv");
-            exit(EXIT_FAILURE);
+            return 1;
+        }
+
+        //verify the first response
+        if(!checked_http_response)
+        {
+        	char *response_header_ending = memchr(buf, '\r', numbytes);
+        	if(NULL != response_header_ending)
+        	{
+				if(0 != strncmp(buf, OK_RESPONSE, strlen(OK_RESPONSE)))
+				{
+					//print the part after "HTTP/1.1 ", until the end of the line
+					fwrite(buf+9, 1, response_header_ending-buf-9, stderr);
+					fwrite("\n", 1, 1, stderr);
+					return 1;
+				}
+
+				checked_http_response = 1;
+        	}
         }
 
         buf_size += numbytes;
@@ -69,7 +89,7 @@ void capture_video(FILE* fd, int (*stop)())
             if(1 != fwrite(buf, buf_size, 1, fd))
             {
                 fprintf(stderr, "fwrite failed\n");
-                exit(EXIT_FAILURE);
+                return 1;
             }
             //printf("Written %ld bytes to file\n", buf_size);
 
@@ -84,11 +104,12 @@ void capture_video(FILE* fd, int (*stop)())
         if(1 != fwrite(buf, buf_size, 1, fd))
         {
             fprintf(stderr, "fwrite failed\n");
-            exit(EXIT_FAILURE);
+            return 1;
         }
     }
     
     fflush(fd);
-
     close(sfd);
+
+    return 0;
 }
