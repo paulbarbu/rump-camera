@@ -1,0 +1,202 @@
+\documentclass[10pt,a4paper,twoside]{article}
+\usepackage{amsfonts}
+%\usepackage{ICDD}
+
+\makeatletter
+    \def\thebibliography#1{\section*{References\@mkboth
+      {REFERENCES}{REFERENCES}}\list
+      {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \usecounter{enumi}}
+    \def\newblock{\hskip .11em plus .33em minus .07em}
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}
+    \makeatother
+
+%\addtolength{\oddsidemargin}{1.3cm}
+%\addtolength{\evensidemargin}{-0.1cm}
+\setlength{\topmargin}{-1.5cm}
+%\setlength{\textheight}{20cm} \setlength{\textwidth}{13cm}
+\setlength{\textheight}{8.875in} \setlength{\textwidth}{6.3in}
+\setlength{\oddsidemargin}{.077in}
+\setlength{\evensidemargin}{.077in} \thispagestyle{empty}
+
+\begin{document}
+%\tableofcontents
+\pagestyle{empty}
+
+\def\SHORTTITLE  {Short - Running title of the article, for header}%
+
+\vspace*{3cm}
+%\antet
+\markboth{\hfill  First_name Last_name of author 1, First_name
+Last_name of author 2, First_name Last_name of author 3}{\hfill
+\SHORTTITLE}
+
+\begin{center}
+{\Large \bf Title of the paper}
+\par\vspace*{0.5cm}
+{\bf Author1 First Name Second Name, Author2 First Name Second
+Name } \\ {\bf Teacher Coordinator: First Name Second Name }
+\end{center}
+
+\vspace*{1cm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% PROOF.TEX %%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tolerance 10000
+\newtheorem{theorem}{Teorem\check{a}}
+\newtheorem{lemma}{Lema}
+\newtheorem{definition}{Definitie}
+\newtheorem{example}{Exemplu}
+\newtheorem{xca}{Exercitiu}
+\newtheorem{remark}{Observatie}
+\newtheorem{proposition}{Propozitie}
+\newtheorem{corollary}{Corolar}
+
+%Please use these definitions for Latex entities (theorem, lemma, etc.)
+%If you need other definitions add to this list and notify us, by e-mail, about this.
+%--------------------------------------
+
+\begin{abstract}
+This is a template for preparing the papers for the proceedings of
+the First International Students Conference on Imagination,
+Creativity, Design and Development (ICDD '11). It is preferable
+that the papers be written in WORD, using the template given for
+the \textit{.doc} or \textit{.rft} files, but we accept also
+papers written in Latex using the template given for the .tex
+files. You must convert your document also in Portable Document
+Format (.pdf). Please follow the instructions given in this
+template, for obtaining the final pdf form of your article.  We
+need both, the WORD source of your article and the pdf document
+containing the article.  If you use Latex we need the files
+\textit{.tex}, \textit{.dvi} and \textit{.pdf}. \textbf{Please do
+not number your pages and do not put headers or footers in your
+article}. These will be putted automatically in the proceedings. 
+
+The paper must contain an Introduction, where you present a motivation of your work, the existing similar researches, the organization of the paper and underline the original part. You must also include in the end of the paper a Conclusion section, containing a comparison of your work with other existing ones, future directions of study, the importance of your work and conclude your main contribution. This section must be different from what you have written in the Abstract and Introduction.
+\end{abstract}
+
+% Next you must introduce the contents of your article
+
+\section{First section}
+The Times New Roman font, is use in the article excepting the
+Latex program sequences. The setup settings for the article are:
+ \\
+ Margins:\\
+ \hspace*{1.6cm} left 2.5 cm \\
+ \hspace*{1.6cm} right 2.5 cm \\
+ \hspace*{1.6cm} top 3.2 cm \\
+ \hspace*{1.6cm} bottom 3.6 cm \\
+On the first page, you must let an additional vertical space of 3
+cm before the title \\Paper format: A4 \\Alignment of paragraphs:
+0.6cm \\Normal text in the article: Times New Roman, 11pt,
+Character spacing Extended by 0.2 pt \\Abstract: Times New Roman,
+10pt, indent from the article margins with 0.8cm left and right.
+\\Title of the paper:  Times New Roman, 17pt, Bold, Character
+spacing Extended by 0.2 pt \\Author name: Times New Roman, 11 pt,
+Bold, Character spacing Extended by 0.2 pt \\Title of section:
+Times New Roman, 16pt, Bold, Character spacing Extended by 0.4 pt,
+space before 16pt, after 10pt.
+
+
+\section{Second section}
+\subsection{Subsection}
+Title of subsection: Times New Roman, 13pt, Bold, Character
+spacing Extended by 0.2 pt, space before 16pt, after 6pt.
+
+\subsubsection{Sub-subsection}
+Title of sub-subsection: Times New Roman, 11pt, Bold, Character
+spacing Extended by 0.2 pt, space before 16pt, after 6pt. \\For
+entities like definitions, theorems, propositions, examples,
+lemmas, exercises, remarks, corollaries, use \\   - for the title
+of the entity: Times New Roman, 11pt, Bold, Character spacing
+Extended by 0.2 pt. \\   - numbering will be continuous in the
+article, without taking into account the number of section. - for
+the body of the entity: Times New Roman, 11pt, Italic, Character
+spacing Extended by 0.2 pt. \\   - spacing: 6pt. before, 6pt.
+after the entity.
+\\
+Example
+\\
+
+\begin{definition}
+   \textit{This is a definition.}
+\end{definition}
+
+The numbered equations will be centred, with the number align
+right, like in the next example
+
+\begin{equation}\label{1}
+    x=a+z
+\end{equation}
+
+All figures (Fig. 1:, Fig. 2:, …) and tables (Table 1:, Table 2:,
+…) should be continuous numbered with Arabic numerals. \\
+
+\section{Program Code}
+Program listing or program commands in text should be set using
+Microsoft Sans Serif, 9pt. as in the following example:
+\begin{verbatim}
+void main()
+{
+   printf("Hello World");
+}
+\end{verbatim}
+
+The Acknowledgement will be written before References, as normal
+text: \\
+\textbf{Acknowledgement:} This paper is founded from the
+research Grant M12. \\
+
+\section{References}
+
+For the references' section:\\    - for the title of section
+References use the same settings as for other section, that is:
+Times New Roman, 16pt, Bold, Character spacing Extended by 0.4 pt,
+space before 16pt,  after 10pt.\\    - for the items: Times New
+Roman, 10pt, Character spacing Extended by 0.2 pt. The name of the
+cited books and the names of the journals or proceedings where are
+published the cited articles, will be Italic. The references'
+items were obtained as a numbered list with numbered position
+aligned left at 0cm. and the text position having the
+characteristics: tab space after 0.6cm, indent at 0.6cm.
+
+
+\begin{thebibliography}{*}\label{Refences}
+\bibitem{a1}
+List of authors, \newblock Title Paper \newblock {\em Journal or
+Proceedings Name}, pages numbers, year. \vspace{-7pt}
+\bibitem{b1}
+List of authors,\newblock{\em Book Title}, Editure,
+Year\bibliography{Bibliografie}. \vspace{-7pt}
+%Examples
+\bibitem{Pop40}
+T.~Popoviciu.
+\newblock Introduction \`a la th\'eorie des diff\'erences divis\'ees.
+\newblock {\em Bull. Math. de la Soc. Roumaine des Sci.},
+\mbox{XLII:~65--78,} 1940. \vspace{-7pt}
+\bibitem{deB78}
+Carl {de Boor},
+\newblock{\em A practical guide to splines},
+Springer-Verlag, New~York  Heidelberg Berlin, 1978.
+\end{thebibliography}
+
+At the end of the article will be situated the details regarding the affiliation of the author.
+If there are many authors,  will be used  a table with columns with width equal  with 8.2cm
+for 2 authors, 5.6cm for 3 authors, Times New Roman, 8pt., Character spacing Extended by 0.2 pt \\
+
+\vspace*{1cm} {\footnotesize
+\begin{tabular*}{16cm}{p{4.2cm}p{4.2cm}p{4.2cm}}
+NAME of First Author 1 & NAME of First Author 2 & NAME of First Author 3\\
+Name of the Institution 1 & Name of the Institution 2 & Name of the Institution 3 \\
+Name of department 1 & Name of department 2 & Name of department 3 \\
+Address of the institution 1 & Address of the institution 1 & Address of the institution 3 \\
+COUNTRY 1 & COUNTRY 2 & COUNTRY 3\\
+E-mail: \ {\it name1@server1}& E-mail: \ {\it name3@server3}&
+E-mail: \ {\it name2@server3}
+\end{tabular*}}
+
+
+
+\end{document}

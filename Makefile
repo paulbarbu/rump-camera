@@ -2,7 +2,7 @@ TUPLE=
 
 # ALT+2, quit
 run: camera.bin
-	fsck.ext2 -y fs.img
+	#fsck.ext2 -y fs.img
 	#set PATH /home/paul/localhost/rumpkernel/rumprun/rumprun/bin/ $PATH
 	rumprun qemu -i \
 		-I if,vioif,'-net tap,script=no,ifname=tap0'\
@@ -14,7 +14,7 @@ run: camera.bin
 # gdb -ex 'target remote:1337' camera_debug.bin 
 # break rumprun_main2
 debug: camera_debug.bin
-	fsck.ext2 -y fs.img
+	#fsck.ext2 -y fs.img
 	rumprun qemu -i \
 		-I if,vioif,'-net tap,script=no,ifname=tap0'\
         -W if,inet,static,192.168.0.103/24 \
@@ -22,6 +22,15 @@ debug: camera_debug.bin
 		-g -curses \
 		-D 1337 \
 		-- camera_debug.bin 12312
+		
+iso: camera.bin
+	#fsck.ext2 -y fs.img
+	#set PATH /home/paul/localhost/rumpkernel/rumprun/rumprun/bin/ $PATH
+	#-b fs.img,/data \
+	rumprun iso \
+		-I if,wm \
+        -W if,inet,dhcp \
+		-- camera.bin 12312
 	
 camera.bin: rump
 	rumprun-bake hw_generic camera.bin camera
@@ -85,7 +94,7 @@ mount:
 clean:
 	-umount mnt
 	-rmdir mnt
-	rm -f camera camera.bin fs.img camera_debug.bin sleep
+	rm -f camera camera.bin fs.img camera_debug.bin sleep rumprun-camera.bin.iso
 
 .PHONY: check
 check:
