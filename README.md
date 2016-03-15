@@ -4,8 +4,8 @@ rumpcamera
 Running surveillance software on bare-metal with unikernels.
 An experiment with rumpkernels.
 
-License
-=======
+License (BSD 3)
+===============
 
 Copyright (c) 2016, Barbu Paul - Gheorghe
 All rights reserved.
