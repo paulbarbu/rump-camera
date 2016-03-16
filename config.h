@@ -1,6 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define IP_CAMERA_ADDR "192.168.0.251"
+#define IP_CAMERA_PORT 8888
+
 #define BASE_DIR "/data/"
 #define BASE_FILENAME "video"
 #define FILE_EXT ".mjpeg"

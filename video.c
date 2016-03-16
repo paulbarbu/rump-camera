@@ -10,11 +10,15 @@
 
 #include "video.h"
 #include "credentials.h"
+#include "config.h"
 
 #define DEFAULT_BUF_SIZE 65536
 #define WRITE_THRESHOLD 65000
 #define OK_RESPONSE "HTTP/1.1 200 OK"
 #define MAX_WRITE_COUNT 3
+
+#define xstr(a) str(a)
+#define str(a)
 
 int capture_video(FILE* fd, int (*stop)())
 {
@@ -33,9 +37,9 @@ int capture_video(FILE* fd, int (*stop)())
 
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(8888);
-    inet_pton(AF_INET, "192.168.0.251", &addr.sin_addr);
-    
+    addr.sin_port = htons(IP_CAMERA_PORT);
+    inet_pton(AF_INET, IP_CAMERA_ADDR, &addr.sin_addr);
+
     if(-1 == connect(sfd, (struct sockaddr*)&addr, sizeof(addr)))
     {
         perror("connect");
@@ -47,7 +51,7 @@ int capture_video(FILE* fd, int (*stop)())
     int numbytes = 0;
 
     char *httpreq = "GET /videostream.cgi?rate=0&user=" CAM_USER "&pwd=" CAM_PASS " HTTP/1.1\r\n\r\n"
-                    "Host: 192.168.0.251:8888i\r\n";
+                    "Host: " IP_CAMERA_ADDR ":" xstr(IP_CAMERA_PORT) "\r\n";
 
     if(-1 == send(sfd, httpreq, strlen(httpreq), 0))
     {
@@ -114,7 +118,7 @@ int capture_video(FILE* fd, int (*stop)())
             return 1;
         }
     }
-    
+
     fflush(fd);
     close(sfd);
 

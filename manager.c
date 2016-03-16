@@ -75,16 +75,16 @@ void manager_release(struct manager *m)
 }
 
 int manager_add(struct manager *m, char *filename, char *fullname, long int size)
-{		
+{
 	int ret = 0;
 
-	//add the new video in the queue	
+	//add the new video in the queue
 	struct video v;
 	_video_create(&v, filename, fullname, size);
-	
-	m->vids[m->num] = v;	
+
+	m->vids[m->num] = v;
 	m->num += 1;
-	
+
 	if(m->num >= MAX_VIDS)
 	{
 		ret = _manager_remove_oldest(m);
@@ -102,9 +102,9 @@ void manager_print(struct manager *m)
 		printf("No videos yet\n");
 		return;
 	}
-	
+
 	printf("From newest to oldest, %ld videos:\n", m->num);
-		
+
 	for(int i=m->num-1; i>=0; --i)
 	{
 		printf("%d: %s (%ld MB)\n", i, m->vids[i].fullname, m->vids[i].size);
@@ -160,7 +160,7 @@ int _manager_remove_oldest(struct manager *m)
 	{
 		m->vids[i-1] = m->vids[i];
 	}
-	
+
 	m->num -= 1;
 
 	return 0;
