@@ -141,7 +141,7 @@ int _sprint_video_list(char **text, struct manager *mgr)
 			snprintf(item, MAX_ITEM_LEN, LIST_ITEM, v->name, v->name, v->size);
 			int item_len = strlen(item);
 
-			// enlarge the text buffer is needed
+			// enlarge the text buffer as needed
 			if(item_len + buffer_len > buffer_size)
 			{
 				buffer_size += 2*item_len;

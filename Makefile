@@ -43,21 +43,21 @@ x86_64:
 	-unlink libs
 	ln -s ${@}libs libs
 	$(MAKE) camera TUPLE=$(TUPLE)
-	
+
 rump:
 	$(eval TUPLE=x86_64-rumprun-netbsd-)
-	
-	-unlink libs
-	ln -s ${@}libs libs
+
+	#-unlink libs
+	#ln -s ${@}libs libs
 	$(MAKE) camera TUPLE=$(TUPLE)
-	
+
 camera: main.c video.c manager.c httpd.c credentials.h config.h
 	$(eval CC=$(TUPLE)gcc)
 	@echo tuple $(TUPLE)
 	@echo cc $(CC)
 
-	$(CC) -g -Wall -o camera -I. ${^} libs/libmicrohttpd.a -Wl,-Bdynamic -lpthread
-			
+	$(CC) -std=c99 -g -Wall -o camera -I. ${^} libs/libmicrohttpd.a -Wl,-Bdynamic -lpthread
+
 sleep: sleep.c
 	$(eval CC=$(TUPLE)gcc)
 	$(eval STRIP=$(TUPLE)strip)
@@ -65,7 +65,7 @@ sleep: sleep.c
 	@echo cc $(CC)
 
 	$(CC) -g -Wall -o sleep -I. ${^}
-	
+
  # run as root
 iface:
 	(ip tuntap add tap0 mode tap)
