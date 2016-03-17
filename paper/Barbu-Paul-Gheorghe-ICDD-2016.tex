@@ -78,11 +78,11 @@ Once such effort is the \textit{rumpkernel}\footnote{http://rumpkernel.org/}
  \footnote{http://rumpkernel.org/misc/usenix-login-2014/login\_1410\_03\_kantee.pdf},
  without needing a virtual machine such as VirtualBox\footnote{https://www.virtualbox.org/} or
  QEMU\footnote{http://wiki.qemu.org/Main\_Page}.
-Later, with the emergence of the unikernels\
-footnote{HaLVM, MirageOS and others: https://en.wikipedia.org/wiki/Unikernel} this project has evolved into
+Later, with the emergence of the unikernels
+\footnote{HaLVM, MirageOS and others: https://en.wikipedia.org/wiki/Unikernel} this project has evolved into
 \textit{rumprun}, which allows the programmer to design an application as if it were running directly on hardware.
-Based on this, I fiddled with the idea of creating surveillance software that runs on bare-metal hardware and
-in this paper I present the successful materialization of this idea.
+Based on this, I fiddled with the idea of creating surveillance software that runs on bare-metal hardware.
+In this paper I present the successful materialization of this idea.
 
 \section{Related work \& software}
 As far as surveillance software goes, there are plenty of alternatives
@@ -143,7 +143,7 @@ The first requirement is satisfied by using the MJPEG
 which is what the majority of IP cameras support, so I chose this format
 for storing the videos, too. This choice involves some trade offs in terms of memory,
 since the MJPEG format features only intra-frame compression, not inter-frame compression seen
-in the more advanced video codecs. Also the simplicity of the coded is chosen over its lack of standardization.
+in the more advanced video codecs. Also the simplicity of the codec is chosen over its lack of standardization.
 
 The POSIX-like nature of the applications written for the Rumprun unikernel makes it
 easy to achieve the second requirement, while encoding the video on disk, the software also computes its
