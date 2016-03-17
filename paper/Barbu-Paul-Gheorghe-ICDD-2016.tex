@@ -1,5 +1,7 @@
 \documentclass[10pt,a4paper,twoside]{article}
 \usepackage{amsfonts}
+\usepackage{graphicx}
+\graphicspath{ {imgs/} }
 %\usepackage{ICDD}
 
 \makeatletter
@@ -103,7 +105,7 @@ together with the isolation provided by Xen can yield profitable results.\footno
 "MirageOS is a library operating system\footnote{Another common name for "unikernel"} that constructs unikernels for secure, high-performance network applications across a variety of cloud computing and mobile platforms. Code can be developed on a normal operating system such as Linux or MacOS X, and then compiled into a fully-standalone, specialised unikernel that runs under the Xen hypervisor."\footnote{https://mirage.io/} This project is similar to the HaLVM, the main difference is the choice of language used for developing the application.
 
 \subsection{Rumprun}
-While the other unikernel alternatives require writing the software in a specific language like Haskell or OCaml, the Rumprun unikernel places no such requirement on the programmer. The only requirement of the Rumprun platform is that the code should run on POSIX-like systems, generally speaking this would include Linux, the BSD family and OS X\footnote{https://github.com/rumpkernel/rumprun-packages}. Another advantage of the Rumprun platform would be the fact that over 99\% of the code in the Rumprun stack is used unmodified from NetBSD, hence providing high quality software and code reuse (including drivers, networking stack and security updates).\cite{RumpComparison}
+While the other unikernel alternatives require writing the software in a specific language like Haskell or OCaml, the Rumprun unikernel places no such requirement on the programmer, it is language agnostic. The only requirement of the Rumprun platform is that the code should run on POSIX-like systems, generally speaking this would include Linux, the BSD family and OS X\footnote{https://github.com/rumpkernel/rumprun-packages}. Another advantage of the Rumprun platform would be the fact that over 99\% of the code in the Rumprun stack is used unmodified from NetBSD, hence providing high quality software and code reuse (including drivers, networking stack and security updates).\cite{RumpComparison}
 
 \section{Rump Camera}
 Keeping in mind that software should run in the real world, solve real problems and should meet users' needs I designed the \textit{Rump Camera} project with some realistic requirements in mind:
@@ -156,7 +158,7 @@ without such a feature the whole application would be rendered useless.
 As such I've chosen to use a third party library, thus illustrating the flexibility provided by the
 Rumprun unikernel and the fact that we can have multi-threaded applications running in an unikernel.
 
-The interface with which the user interacts is a web-based interface, so the \textit{Rump Camera}
+The interface with which the user interacts is a web-based interface (see figure \ref{fig:interface}), so the \textit{Rump Camera}
 project also acts as as a web server with the help of the \texttt{libmicrohttpd}
 \footnote{https://www.gnu.org/software/libmicrohttpd/} library. Running as a unikernel, the application
 cannot link to a dynamically loaded library since filesystems may not be available, thus there's always a need for statically linking libraries used in unikernel applications, this is also a practical constraint since
@@ -172,7 +174,12 @@ Still, if it weren't for this approach, I'd
 have to implement a file transfer protocol in order to be able to get access to the surveillance videos, thus
 increasing code size, reinventing the wheel and gaining nothing in terms of code complexity.
 
-TODO: interface picture
+\begin{figure}
+  \centering
+  \fbox{\includegraphics{video-list}}
+  \caption{A screenshot of the application's simple interface}
+  \label{fig:interface}
+\end{figure}
 
 The user interface is coded in \texttt{httpd.c} and \texttt{httpd.h}:
 
@@ -187,9 +194,14 @@ I shall note that the video capture part of the application is independent of th
 
 This module of the application handles the connection, authentication, retrieval and storage of data from an IP camera. It can be considered the central piece of the experiment. The credentials used for authentication to the camera should be stored in the \texttt{credentials.h} file (so they should be made available at compile time), similarly to the other parts of the application, the address and port on which to connect to the video device cand be configured in the \texttt{config.h} file.
 
-Figure TODO describes the architecture of the system.
+Figure \ref{fig:archdiagram} describes the architecture of the system as a diagram.
 
-TODO: code size
+\begin{figure}
+  \centering
+  \fbox{\includegraphics[scale=0.75]{rumpcamera-arch}}
+  \caption{The Rump Camera Architecture}
+  \label{fig:archdiagram}
+\end{figure}
 
 \section{Future work and conclusions}
 
