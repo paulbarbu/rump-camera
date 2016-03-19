@@ -1,6 +1,7 @@
 \documentclass[10pt,a4paper,twoside]{article}
 \usepackage{amsfonts}
 \usepackage{graphicx}
+\usepackage{float}
 \graphicspath{ {imgs/} }
 %\usepackage{ICDD}
 
@@ -203,7 +204,7 @@ Still, if it weren't for this approach, I'd
 have to implement a file transfer protocol in order to be able to get access to the surveillance videos, thus
 increasing code size, reinventing the wheel and gaining nothing in terms of code complexity.
 
-\begin{figure}
+\begin{figure}[H]
   \centering
   \fbox{\includegraphics{video-list}}
   \caption{A screenshot of the application's simple interface}
@@ -235,7 +236,7 @@ from an IP camera.
 
 Figure \ref{fig:archdiagram} describes the architecture of the system as a diagram.
 
-\begin{figure}
+\begin{figure}[H]
   \centering
   \fbox{\includegraphics[scale=0.6]{rumpcamera-arch}}
   \caption{The Rump Camera Architecture}
@@ -281,6 +282,8 @@ This paper successfully demonstrates that surveillance software for IP cameras
  because adding features to a single unikernel application doesn't scale well,
  multiple applications chained together in a computational pipe-line shall be used instead.
 
+ The source code of the application can be freely accessed at: https://github.com/paulbarbu/rump-camera
+
 \begin{thebibliography}{*}\label{Refences}
 \bibitem{RumpComparison}
 github.com/rumpkernel, \newblock Info: Comparison of rump kernels with similar technologies,
@@ -313,8 +316,8 @@ Y. Jin, Y. Wen, Q. Chen,
 
 \bibitem{gpl}
 GNU General Public License, \newblock http://www.gnu.org/licenses/gpl-3.0.en.html,
-\newblock Version 3, 29 June 2007
-\newblock Access 17th of MArch 2016
+\newblock Version 3, 29 June 2007,
+\newblock Accessed 17th of March 2016
 
 \end{thebibliography}
 
