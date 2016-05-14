@@ -84,6 +84,9 @@ Later, with the emergence of the unikernels
 \textit{rumprun}, which allows the programmer to design an application as if it were running directly on hardware.
 Based on this, I fiddled with the idea of creating surveillance software that runs on bare-metal hardware.
 In this paper I present the successful materialization of this idea.
+The paper presents and compares related work in the second section, then proceeds to list the requirements that drove
+the implementation of my experiment together with its details and its architecture in the third section. Lastly the
+conclusions and possible improvements of the application are shown.
 
 \section{Related work \& software}
 As far as surveillance software goes, there are plenty of alternatives
@@ -242,6 +245,15 @@ Figure \ref{fig:archdiagram} describes the architecture of the system as a diagr
   \caption{The Rump Camera Architecture}
   \label{fig:archdiagram}
 \end{figure}
+
+It can be seen that the users have access to the application solely though the web interface, which is implemented by
+the \texttt{httpd} module. In turn, this module is supported by the third party library \texttt{libmicrohttpd} which
+abstracts away the details of creating, sending and replying to HTTP requests. This library was chosen for its
+compactness and because it has an extended test suite. The next module, the \texttt{manager}, is the layer that provides
+the order in which the videos were created (for the interface) and decides what video to delete in the event that the
+disk becomes full or the maximum number of videos created has been reached.
+The \texttt{manager} module is of course in strong relation with the \texttt{video} module, which has the
+responsibility to connect to the IP camera (possibly by using authentication) and to store the captured videos on disk.
 
 \section{Future work and conclusions}
 
